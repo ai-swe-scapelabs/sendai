@@ -2,7 +2,7 @@
 
 ## Overview
 
-Sendai is a comprehensive project designed to [project purpose - to be defined]. This repository serves as the central hub for development, collaboration, and distribution of the Sendai platform.
+Sendai is a comprehensive bulk SMS system designed to provide reliable, scalable, and efficient messaging capabilities for businesses and organizations. This repository serves as the central hub for development, collaboration, and distribution of the Sendai platform.
 
 ## 🚀 Features
 
@@ -15,9 +15,10 @@ Sendai is a comprehensive project designed to [project purpose - to be defined].
 
 Before you begin, ensure you have the following installed:
 
-- [Prerequisite 1] - Version X.X or higher
-- [Prerequisite 2] - Version Y.Y or higher
-- [Prerequisite 3] - Version Z.Z or higher
+- **Node.js** - Version 18.0 or higher
+- **PostgreSQL** - Version 13.0 or higher
+- **Redis** - Version 6.0 or higher
+- **Git** - For version control
 
 ## 🛠️ Installation
 
@@ -38,12 +39,19 @@ cd sendai
 ### Setup Dependencies
 
 ```bash
-# Install dependencies (adjust based on your package manager)
-npm install  # For Node.js projects
-# OR
-pip install -r requirements.txt  # For Python projects
-# OR
-make setup  # For projects with Makefile
+# Install Node.js dependencies
+npm install
+
+# Install PostgreSQL (Ubuntu/Debian)
+sudo apt-get update
+sudo apt-get install postgresql postgresql-contrib
+
+# Install Redis (Ubuntu/Debian)
+sudo apt-get install redis-server
+
+# Setup environment variables
+cp .env.example .env
+# Edit .env with your configuration values
 ```
 
 ## 🎯 Quick Start
@@ -74,23 +82,20 @@ Get up and running with these simple steps:
 
 ```
 sendai/
-├── src/                    # Source code
-│   ├── components/         # Reusable components
-│   ├── utils/             # Utility functions
-│   └── main.js            # Entry point
-├── tests/                 # Test files
-│   ├── unit/              # Unit tests
-│   └── integration/       # Integration tests
-├── docs/                  # Documentation
-│   ├── api/               # API documentation
-│   └── guides/            # User guides
-├── config/                # Configuration files
-├── scripts/               # Build and deployment scripts
+├── .git/                  # Git version control
 ├── .env.example           # Environment variables template
-├── package.json           # Project metadata and dependencies
-├── README.md              # This file
-└── LICENSE                # License information
+├── CHANGELOG.md           # Version history and changes
+├── CONTRIBUTING.md        # Contribution guidelines
+├── LICENSE                # MIT License
+└── README.md              # This file
 ```
+
+**Note**: This is the initial project structure. As development progresses, additional directories will be added including:
+- `src/` - Source code
+- `tests/` - Test files
+- `docs/` - Documentation
+- `config/` - Configuration files
+- `scripts/` - Build and deployment scripts
 
 ## 🔧 Configuration
 
@@ -106,43 +111,78 @@ The project can be configured through:
 |----------|-------------|---------|
 | `NODE_ENV` | Environment mode | `development` |
 | `PORT` | Server port | `3000` |
-| `DATABASE_URL` | Database connection string | - |
+| `DEBUG` | Enable debug logging | `true` |
+| `DATABASE_URL` | PostgreSQL connection string | - |
+| `DATABASE_HOST` | Database host | `localhost` |
+| `DATABASE_PORT` | Database port | `5432` |
+| `DATABASE_NAME` | Database name | `sendai_db` |
+| `DATABASE_USER` | Database username | - |
+| `DATABASE_PASSWORD` | Database password | - |
 | `API_KEY` | External API key | - |
+| `API_SECRET` | External API secret | - |
+| `API_BASE_URL` | Base URL for external API | `https://api.example.com` |
+| `JWT_SECRET` | JWT signing secret | - |
+| `SESSION_SECRET` | Session encryption secret | - |
+| `REDIS_URL` | Redis connection string | `redis://localhost:6379` |
+| `EMAIL_SERVICE_API_KEY` | Email service API key | - |
+| `LOG_LEVEL` | Logging level | `info` |
+| `LOG_FILE` | Log file path | `logs/app.log` |
 
 ## 📖 Usage Examples
 
 ### Basic Usage
 
 ```javascript
-// Example code for basic usage
+// Example code for basic SMS sending
 const sendai = require('sendai');
 
 // Initialize the client
-const client = new sendai.Client();
+const client = new sendai.Client({
+  apiKey: process.env.API_KEY,
+  baseUrl: process.env.API_BASE_URL
+});
 
-// Perform an operation
-client.doSomething()
-  .then(result => console.log(result))
-  .catch(error => console.error(error));
+// Send a single SMS
+client.sendSMS({
+  to: '+1234567890',
+  message: 'Hello from Sendai!',
+  from: 'YourSenderID'
+})
+  .then(result => console.log('Message sent:', result))
+  .catch(error => console.error('Error sending message:', error));
 ```
 
 ### Advanced Usage
 
 ```javascript
-// Example for advanced usage
+// Example for bulk SMS sending
 const sendai = require('sendai');
 
 const client = new sendai.Client({
-  apiKey: 'your-api-key',
-  timeout: 5000,
+  apiKey: process.env.API_KEY,
+  timeout: 10000,
   retries: 3
 });
 
-// Use advanced features
-client.advancedFeature({
-  param1: 'value1',
-  param2: 'value2'
-});
+// Send bulk SMS
+const recipients = [
+  '+1234567890',
+  '+0987654321',
+  '+1122334455'
+];
+
+client.sendBulkSMS({
+  to: recipients,
+  message: 'Special offer! Get 20% off today.',
+  from: 'PromoAlert',
+  scheduleTime: '2025-11-16T10:00:00Z' // Optional scheduling
+})
+  .then(result => console.log('Bulk messages sent:', result))
+  .catch(error => console.error('Error sending bulk messages:', error));
+
+// Check delivery status
+client.getDeliveryStatus('message-id-123')
+  .then(status => console.log('Delivery status:', status));
 ```
 
 ## 🧪 Testing
@@ -267,11 +307,11 @@ This project is licensed under the [MIT License](LICENSE) - see the LICENSE file
 
 ## 📊 Project Status
 
-![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
-![Coverage](https://img.shields.io/badge/coverage-85%25-green)
-![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![Build Status](https://img.shields.io/badge/build-in_progress-yellow)
+![Coverage](https://img.shields.io/badge/coverage-tbd-lightgrey)
+![Version](https://img.shields.io/badge/version-0.1.0--alpha-orange)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
 ---
 
-**Note**: This is a template README. Please update the sections marked with placeholders to match your specific project requirements and implementation details.
+**Note**: Sendai is currently in early development. Features and APIs are subject to change as we build out the comprehensive bulk SMS system.
